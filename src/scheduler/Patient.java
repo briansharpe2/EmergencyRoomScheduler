@@ -31,7 +31,7 @@ public class Patient implements Comparable<Patient> {
     }
 
 
-    //Getter methods: Allows EmergencyRoomScheduler class to retrieve whatever field needed
+    //Getter methods: Allows EmergencyRoomScheduler class to retrieve whatever field needed.
     public String getName() {return name;}
     public int getSsn() {return ssn;}
     public String getDateOfBirth() {return dateOfBirth;}

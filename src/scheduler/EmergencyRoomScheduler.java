@@ -33,7 +33,7 @@ public class EmergencyRoomScheduler {
             return;
         }
         patientPQueue.add(patient);
-        patientTable.put(hash(patient), patient);
+        patientTable.put(patient.getSsn(), patient);
         System.out.println("Patient Added:\n" + patient);
     }
 
@@ -66,19 +66,16 @@ public class EmergencyRoomScheduler {
 
     // Retrieves and displays all patient details based on SSN for quick lookup.
     // Most Effective Use of HashTable
-    // Need to create temp patient object with same hash location criteria to be considered equal
-    public void viewPatientDetails(String name, int ssn) {
-        Patient patientObject = new Patient(name, ssn, "", "", "", 0, 0, "");
-        int hashKey = hash(patientObject);
-        Patient wantedPatient = patientTable.get(hashKey);
 
-        if (wantedPatient == null) {
-            System.out.println("No patient found with name: " + name + " and SSN " + ssn +" Combination. Please review");
-        } else {
-            System.out.println(wantedPatient.toString());
+    public void viewPatientDetails(String name, int ssn) {
+        Patient wantedPt = patientTable.get(ssn);
+        if (wantedPt == null){
+            System.out.println("No patient found with SSN: " + ssn + "Please Review.");
+        }
+        else {
+            System.out.println(wantedPt.toString());
         }
     }
-
 
 
 
