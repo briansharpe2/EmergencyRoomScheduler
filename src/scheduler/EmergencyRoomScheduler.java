@@ -1,4 +1,5 @@
 package scheduler;
+import java.util.InputMismatchException;
 import java.util.PriorityQueue;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -44,11 +45,10 @@ public class EmergencyRoomScheduler {
             patientTable.remove(hash(patient));
             System.out.println("Currently Treating: \n" + patient.toString());
         }
-        else{System.out.println("No patients currently requiring treatment");}
+        else {System.out.println("No patients currently requiring treatment");}
     }
 
-    // Displays a summary of the current waiting list, ordered by priority level.
-    //This method iterates through the priority queue to show patients and their treatment urgency.
+    // Displays a summary of the current waiting list, Next Pt to be treated at the top. Rest Unordered.
     private void viewPQueue(){
         if (patientPQueue.isEmpty()){
             System.out.println("Wait List Is Currently Empty.");
@@ -87,8 +87,9 @@ public class EmergencyRoomScheduler {
     // Note: For buffer performance issue: code requires //  scanner.nextLine() after all scanner.readInt(); to remove lagging newline chars
     public void runCommandLineInterface() {
         Scanner scanner = new Scanner(System.in); // creates scanner for input
-        System.out.println("Welcome to our ER Scheduler: Select Option Below (1 - 5)");
+
         while (true) {
+            System.out.println("Welcome to our ER Scheduler: Select Option Below (1 - 5)");
             System.out.println("1: Add New Patient");
             System.out.println("2: Treat Next Patient");
             System.out.println("3: View Current Waiting List");
@@ -97,49 +98,87 @@ public class EmergencyRoomScheduler {
 
             // each case represents a choice between 1 and 5
             int selection = scanner.nextInt();
-            scanner.nextLine(); // Clears any potential buffer performance issue
+            scanner.nextLine();
 
             switch (selection) {
+                // Case 1: Option 1: Add New Pt
                 case 1:
                     System.out.println("Enter Patient First and Last Name:");
                     String name = scanner.nextLine();
 
-                    // Validation: SSN in correct format (9 digits)
-                    System.out.println("Enter SSN: 9 Digits");
-                    int ssn = scanner.nextInt();
-                    scanner.nextLine(); //Clears any potential buffer performance issues
-                    if (String.valueOf(ssn).length() != 9) {
-                        System.out.println("Invalid SSN. Please enter exactly 9 digits.");
-                        break;
+                    // Validation: SSN
+                    int ssn;
+                    while (true) {
+                        System.out.println("Please enter 9 digit SSN: ");
+                        try {
+                            int trySsn = scanner.nextInt();
+                            scanner.nextLine(); //consumes leftover newline
+
+                            //Makes sure its proper input of exactly 9 digits
+                            if (trySsn < 100000000 || trySsn > 999999999) {
+                                throw new InputMismatchException();
+                            }
+
+                            ssn = trySsn;
+                            break;
+
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid SSN. Please enter exactly 9 digits. Press enter to try again.");
+                            scanner.nextLine();
+                        }
                     }
 
-                    System.out.println("Enter Date of Birth (MON-DD-YYYY): ");
+                    System.out.println("Enter Date of Birth");
                     String dateOfBirth = scanner.nextLine();
 
                     System.out.println("Enter Address:");
                     String address = scanner.nextLine();
 
-                    System.out.println("Enter Phone Number (xxx-xxx-xxxx): ");
+                    System.out.println("Enter Phone Number: ");
                     String phoneNumber = scanner.nextLine();
 
+
                     // Validation: Priority level within range 1-3
-                    System.out.println("Enter Priority Level (1: HIGH, 2: MEDIUM, 3: LOW):");
-                    int priorityLevel = scanner.nextInt();
-                    scanner.nextLine(); //Clears any potential buffer performance issues
-                    if (priorityLevel < 1 || priorityLevel > 3) {
-                        System.out.println("Invalid Priority Level. Must be between 1 and 3");
-                        break;
+                    int priorityLevel;
+                    while (true) {
+                        System.out.println("Enter Priority Level (1: HIGH, 2: MEDIUM, 3: LOW):");
+                        try {
+                            int tryPriorityLevel = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (tryPriorityLevel < 1 || tryPriorityLevel > 3) {
+                                throw new InputMismatchException();
+                            }
+                            priorityLevel = tryPriorityLevel;
+                            break;
+
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid Priority Level: Must be Numbers 1, 2, or 3. Press enter to try again.");
+                            scanner.nextLine();
+                        }
                     }
 
                     // Validation: Arrival Time in correct military format (1-2359)
                     System.out.println("Enter Arrival Time in Military Format (Ex: 1350 for 1:50 PM)");
-                    System.out.println("WARNING: Input must be between 1 and 2359. Do not lead with zeros.");
-                    int arrivalTime = scanner.nextInt();
-                    scanner.nextLine(); //Clears any potential buffer performance issues
-                    if (arrivalTime < 1 || arrivalTime > 2359) {
-                        System.out.println("Invalid Arrival Time: you must enter a value between 1 and 2359");
-                        break;
+                    System.out.println("Input must be between 1 and 2359. Do not lead with zeros.");
+                    int arrivalTime;
+                    while(true) {
+                        try {
+                            int tryArrivalTime = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (tryArrivalTime < 1 || tryArrivalTime > 2359) {
+                                throw new InputMismatchException();
+                            }
+                            arrivalTime = tryArrivalTime;
+                            break;
+
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid Arrival time. Must be between 1 and 2359. Press enter to try again.");
+                            scanner.nextLine();
+                        }
                     }
+
 
                     System.out.println("Enter Treatment Description:");
                     String treatmentDescription = scanner.nextLine();
@@ -148,27 +187,43 @@ public class EmergencyRoomScheduler {
                     addPatient(newPatient);
                     break;
 
+
                 case 2:
                     // Treats the highest priority patient
                     treatCurrentPatient();
                     break;
 
+
                 case 3:
-                    // Displays the current waiting list
+                    // Displays the current waiting list, Most Urgent at top. rest unordered.
                     viewPQueue();
                     break;
+
 
                 case 4:
                     // View specific patient details by name and SSN
                     System.out.println("Enter Patient Name:");
                     String enteredName = scanner.nextLine();
 
-                    System.out.println("Enter Patient SSN (9 Digits):");
-                    int enteredSSN = scanner.nextInt();
-                    scanner.nextLine(); //Clears any potential buffer performance issues
-                    if (String.valueOf(enteredSSN).length() != 9) {
-                        System.out.println("Invalid SSN: Must enter 9 digits");
-                        break;
+                    int enteredSSN;
+                    while (true) {
+                        System.out.println("Please enter 9 digit SSN: ");
+                        try {
+                            int trySsn = scanner.nextInt();
+                            scanner.nextLine(); //consumes leftover newline
+
+                            //Makes sure its proper input of exactly 9 digits
+                            if (trySsn < 100000000 || trySsn > 999999999) {
+                                throw new InputMismatchException();
+                            }
+
+                            enteredSSN = trySsn;
+                            break;
+
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid SSN. Please enter exactly 9 digits. Press enter to try again.");
+                            scanner.nextLine();
+                        }
                     }
 
                     viewPatientDetails(enteredName, enteredSSN);
@@ -178,7 +233,7 @@ public class EmergencyRoomScheduler {
                     System.out.println("Exiting ER Scheduler. Bye!");
                     return;
 
-                default:
+               default:
                     System.out.println("Invalid Option. Choose a digit between 1 and 5.");
             }
         }
