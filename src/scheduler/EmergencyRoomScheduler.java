@@ -189,13 +189,13 @@ public class EmergencyRoomScheduler {
 
 
                 case 2:
-                    // Treats the highest priority patient
+                    // Treats the highest priority patient (Priority Lvl + earlier arrival time for ties)
                     treatCurrentPatient();
                     break;
 
 
                 case 3:
-                    // Displays the current waiting list, Most Urgent at top. rest unordered.
+                    // Displays the current waiting list, Most Urgent at top. Other pts unordered.
                     viewPQueue();
                     break;
 
@@ -238,11 +238,6 @@ public class EmergencyRoomScheduler {
             }
         }
     }
-
-
-
-
-
 
 
 
@@ -418,10 +413,4 @@ public class EmergencyRoomScheduler {
 
 
     }
-
-
-
-
-
-
 }

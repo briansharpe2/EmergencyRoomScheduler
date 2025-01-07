@@ -77,15 +77,17 @@ public class Patient implements Comparable<Patient> {
     @Override
     // Provides readable summary of an individual instance of patient. Good Display setup for patient Info.
     public String toString() {
-        return "Patient Details: \n" +
-                "Name: " + name + "\n" +
-                "SSN: " + ssn + "\n" +
-                "DOB: " + dateOfBirth + "\n" +
-                "Address: " + address + "\n" +
-                "Phone Number: " + phoneNumber + "\n" +
-                "Priority Level: " + priorityLevel + "\n" +
-                "Arrival Time: " + arrivalTime + "\n" +
-                "Treatment Description: " + treatmentDescription + "\n";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Patient Details: \n");
+        sb.append("Name: ").append(name).append("\n");
+        sb.append("SSN: ").append(ssn).append("\n");
+        sb.append("DOB: ").append(dateOfBirth).append("\n");
+        sb.append("Address: ").append(address).append("\n");
+        sb.append("Phone Number: ").append(phoneNumber).append("\n");
+        sb.append("Priority Level: ").append(priorityLevel).append("\n");
+        sb.append("Arrival Time: ").append(arrivalTime).append("\n");
+        sb.append("Treatment Description: ").append(treatmentDescription).append("\n");
+        return sb.toString();
     }
 
 
